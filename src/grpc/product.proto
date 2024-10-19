@@ -1,0 +1,25 @@
+syntax = "proto3";
+package product;
+
+//creates service and the needed functions
+service Product {
+    rpc WarmUpCyclotron(Duration) returns(Reply){}
+    rpc StartCyclotron(StartParamaters) returns (Reply){}
+}
+
+//time in seconds?
+message Duration{
+    int32 starttime = 1;
+    int32 endtime = 2;
+}
+
+message StartParamaters{
+    int32 beamDurationstart = 1;
+    int32 beamDurationend = 2;
+    int32 beamcurrentstart = 3;
+    int32 beamcurrentend = 4;
+}
+
+message Reply{
+    string text = 1;
+}
