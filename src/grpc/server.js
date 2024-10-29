@@ -1,3 +1,4 @@
+//import { Component } from 'react';
 
 var fs = require('fs');
 const grpc = require('@grpc/grpc-js');
@@ -29,7 +30,7 @@ function warmup(duration){
 }
 
 function Start(startparameters){
-    //refresher.refreshPage();
+
     startParameters =startparameters;
     startcyclotronbool = true
     var reply ={text: ''}
@@ -39,11 +40,11 @@ function Start(startparameters){
 
 function WarmUpCyclotron(call, callback){
     callback(null,warmup(call.request));
+
 }
 
 function StartCyclotron(call, callback){
-    callback(null,Start(call.request))
-    
+    callback(null,Start(call.request));
 }
 
 

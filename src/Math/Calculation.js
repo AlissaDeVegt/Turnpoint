@@ -10,6 +10,50 @@ export function AccelTime(a,d){
 }
 
 export function SpeedEndAccel(a, vb, tb,te){
-    var ve =a*(te-tb)+vb;
+    var ve =(a*(te-tb))+vb;
     return ve;
+}
+
+export function angle(v,r){
+    var w = (v/r);
+    return w;
+}
+
+export function radius(v,m,q,b){
+    //radius
+    var r = (v*m)/(q*b);
+    return r;
+}
+
+export function cos(d,r){
+    var y = Math.cos(d)*r;
+    return y;
+}
+
+export function combinedcos(d,r){
+    var sin = Math.cos(d-1)-Math.cos(d);
+    var y = sin * r
+    return y;
+}
+
+export function sin(d,r){
+    var x = Math.sin(d)*r;
+    return x;
+}
+
+export function combinedsin(d,r){
+    var sin = Math.sin(d+1)-Math.sin(d);
+    var x = sin * r
+    return x;
+}
+
+export function DegreesToRad(degrees){
+    var rad = degrees*(Math.PI/180);
+    return rad;
+}
+
+
+export function DistAccel(v,a,t){
+var s =(v*t) + (0.5*a*(t**2));
+ return s;
 }

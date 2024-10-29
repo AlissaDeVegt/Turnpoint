@@ -1,49 +1,70 @@
 import {ThreeScene} from "../component/ThreeScene";
+import * as threeinfo from "../component/ThreeScene";
 import * as Server from "../grpc/server";
 import * as client from "../grpc/testclient";
 import * as calcul from "../Math/Calculation"
 
 
-var obj={
-  x:0.00,
-  y:0.00,
-  z:0.00
+
+var prop={
+  accel:0,
+  rendertime:0.001,
+  spacebetween:0,
+  radius:0,
+  left:false,
+  load:0,
+  mass:0,
+  elect:0,
+  collisionpoint:0
 }
 
 var Cyclotron={
-  deesradius:10,
-  spacebetween:16
+  deesradius:10, //cm
+  spacebetween:16 //cm
 }
-
-var rendertime = 0.016; 
-var currenttime = 0 ;
-var speed =0;
-
-export function calcbundle(time:any,accel:any){
-  
-  if(obj.x<=(0.5*Cyclotron.spacebetween) && obj.x >=-0.5*Cyclotron.spacebetween){ //todo when objects x is in one of dees aka 0+1/2 spacebetween or when-0+spacebetween
-    speed = calcul.SpeedEndAccel(accel,speed,currenttime,currenttime+rendertime);
-    obj.x += speed * rendertime ;
-    currenttime +=rendertime;
-  }
+var particle={
+  load:1,
+  mass: 1,   ///1.67262192595*(10**-27),
+  electricfield:2 //the strenght of the electric field needs to be removed from this
 }
-
 
 export async function Servload(){
   client.main();
   var text = Server.startcyclotronbool;
-  var accel = calcul.Accelaration(1,2,1);
+  var accel = calcul.Accelaration(particle.load,particle.electricfield,particle.mass);
   console.log(accel);
-  var t = calcul.AccelTime(accel,Cyclotron.spacebetween); 
+  var t = calcul.AccelTime(accel,(Cyclotron.spacebetween/2)); 
   console.log(t);
+  var expectedspeed =calcul.SpeedEndAccel(accel,0,0,t);
+  console.log(expectedspeed);
+  var expectedrad =calcul.radius(expectedspeed,particle.mass,particle.load,2);
+  console.log(expectedrad);
+  
 
-  setInterval(()=>{calcbundle(t,accel);},rendertime);
+  let starttime = performance.now();
+  var expecteanglespeed=calcul.angle(expectedspeed,expectedrad);
+  console.log(expecteanglespeed);  
+  let endtime = performance.now();
+  var rendertime = endtime-starttime;
+  console.log(rendertime);
+
+  var expecteddistance=calcul.DistAccel(0,accel,rendertime);
+  console.log(expecteddistance);  
+
+
+
+  prop.accel=accel;
+  prop.spacebetween=Cyclotron.spacebetween;
+  prop.elect=particle.electricfield;
+  prop.mass=particle.mass;
+  prop.load=particle.load;
+  prop.radius=Cyclotron.deesradius;
+  prop.collisionpoint= Cyclotron.deesradius+2;
 
   if(text== true){
     return (    
       <div>
-      <p id="p1"> {speed}</p>
-      <ThreeScene properties={obj}/>
+      <ThreeScene properties={prop}/>
       </div>
       );
   }
