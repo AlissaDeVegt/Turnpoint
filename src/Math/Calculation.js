@@ -30,20 +30,8 @@ export function cos(d,r){
     return y;
 }
 
-export function combinedcos(d,r){
-    var sin = Math.cos(d-1)-Math.cos(d);
-    var y = sin * r
-    return y;
-}
-
 export function sin(d,r){
     var x = Math.sin(d)*r;
-    return x;
-}
-
-export function combinedsin(d,r){
-    var sin = Math.sin(d+1)-Math.sin(d);
-    var x = sin * r
     return x;
 }
 

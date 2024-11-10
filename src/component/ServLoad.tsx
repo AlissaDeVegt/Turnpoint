@@ -15,42 +15,26 @@ var prop={
   load:0,
   mass:0,
   elect:0,
-  collisionpoint:0
+  collisionpoint:0,
+  magneticflux:2,
+  speedup:1
 }
 
 var Cyclotron={
-  deesradius:10, //cm
-  spacebetween:16 //cm
+  deesradius:1.2, //m
+  spacebetween:0.5 //m
 }
 var particle={
   load:1,
   mass: 1,   ///1.67262192595*(10**-27),
-  electricfield:2 //the strenght of the electric field needs to be removed from this
+  electricfield: 0.01 //the strenght of the electric field needs to be removed from this
 }
 
 export async function Servload(){
   client.main();
   var text = Server.startcyclotronbool;
   var accel = calcul.Accelaration(particle.load,particle.electricfield,particle.mass);
-  console.log(accel);
-  var t = calcul.AccelTime(accel,(Cyclotron.spacebetween/2)); 
-  console.log(t);
-  var expectedspeed =calcul.SpeedEndAccel(accel,0,0,t);
-  console.log(expectedspeed);
-  var expectedrad =calcul.radius(expectedspeed,particle.mass,particle.load,2);
-  console.log(expectedrad);
-  
-
-  let starttime = performance.now();
-  var expecteanglespeed=calcul.angle(expectedspeed,expectedrad);
-  console.log(expecteanglespeed);  
-  let endtime = performance.now();
-  var rendertime = endtime-starttime;
-  console.log(rendertime);
-
-  var expecteddistance=calcul.DistAccel(0,accel,rendertime);
-  console.log(expecteddistance);  
-
+  console.log('accelaration : '+ accel);
 
 
   prop.accel=accel;
@@ -60,12 +44,13 @@ export async function Servload(){
   prop.load=particle.load;
   prop.radius=Cyclotron.deesradius;
   prop.collisionpoint= Cyclotron.deesradius+2;
+  //testRadialen();
 
   if(text== true){
-    return (    
+    return (   
       <div>
-      <ThreeScene properties={prop}/>
-      </div>
+        <ThreeScene properties={prop}/>
+      </div> 
       );
   }
   else{
@@ -75,4 +60,15 @@ export async function Servload(){
       </div>
       );
   }
+}
+
+function testRadialen(){
+
+
+  console.log('sin with radials of 888 : ' + calcul.sin(888,1));
+  console.log('expected result : 0.877546429');
+
+  console.log('cos with radials of 888 : ' + calcul.cos(888,1));
+  console.log('expected result :-0.479491672');
+
 }

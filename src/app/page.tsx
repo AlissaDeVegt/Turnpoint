@@ -3,6 +3,7 @@ var fs = require('fs');
 import {Servload} from "../component/ServLoad";
 import {Testfunction} from "../component/ReloadComp";
 import * as Server from "../grpc/server";
+import "../css/style.css"
 
 Server.StartServer();
 
