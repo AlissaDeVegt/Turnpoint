@@ -53,10 +53,30 @@ function runStart(callback){
   
 }
 
+function runStop(callback){
+    function Stopcallback(error, reply){
+        if(error){
+            callback(error);
+            return;
+        }
+        console.log(reply.text);
+    }
+
+    var Message = {
+        text : 'stop this' 
+    }
+
+    client.StopCyclotron(Message,Stopcallback);
+  
+}
+
 export function main(){
     async.series([runwarmup]);
     async.series([runStart]);
+
+    //async.series([runStop]);
 }
 
 exports.runwarmup =runwarmup;
 exports.runStart =runStart;
+exports.runStop =runStop;

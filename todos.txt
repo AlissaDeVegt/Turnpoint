@@ -9,9 +9,10 @@ todo
 - screen with parameters
 - allow to stop simulation while its running
 
-1[] cut the code and cleanup
-2[] fix weirdness with rendertime
-3[] buttons for starting
-4[] sliders fix
-5[] make it sliders dont interact with sim when its running
-6[] receive data
+1[X] cut the code and cleanup
+2[X] fix weirdness with rendertime
+3[x] buttons for starting
+4[X] sliders fix
+5[] receive data
+6[] make it student friendly
+7[] make it program friendly 

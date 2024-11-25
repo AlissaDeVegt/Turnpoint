@@ -1,4 +1,3 @@
-//import { Component } from 'react';
 
 var fs = require('fs');
 const grpc = require('@grpc/grpc-js');
@@ -20,7 +19,7 @@ export var durationR={
     starttime:1,
     endtime:2};
 export var startcyclotronbool = false
-
+export var message;
 
 function warmup(duration){
     durationR = duration;
@@ -47,17 +46,25 @@ function StartCyclotron(call, callback){
     callback(null,Start(call.request));
 }
 
+function Stop(Message){
+    startcyclotronbool = false;
+    message = Message;
+    var reply ={text: ''};
+    reply.text = 'stopping sim';
+    return reply;
+}
 
-//add a test for fiinding working port mm 
+function StopCyclotron(call, callback){
+    callback(null,Stop(call.request));
+}
+
 export function StartServer(){
-    
-    const server = new grpc.Server();
-    server.addService(productpackage.Product.service,{WarmUpCyclotron: WarmUpCyclotron,StartCyclotron:StartCyclotron});
-    server.bindAsync('0.0.0.0:9090', grpc.ServerCredentials.createInsecure(),(error,port)=>{
-        if (error){
-            console.error('server has failes : ${error.message}')
-        }
-        console.log('server running at 0.0.0.0:9090');
-    });
-    
+        const server = new grpc.Server();
+        server.addService(productpackage.Product.service,{WarmUpCyclotron: WarmUpCyclotron,StartCyclotron:StartCyclotron,StopCyclotron:StopCyclotron});
+        server.bindAsync('0.0.0.0:9090', grpc.ServerCredentials.createInsecure(),(error,port)=>{
+            if (error){
+                console.error('server has failes : ${error.message}')
+            }
+            console.log('server running at 0.0.0.0:9090');
+        });   
 }

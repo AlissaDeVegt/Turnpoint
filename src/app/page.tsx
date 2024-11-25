@@ -9,7 +9,7 @@ Server.StartServer();
 
 // kan elke naam hebben, hoeft geen Home te zijn! zolang je default maar benoemt
 export default function Home(){
-  
+  //two buttons
   return(
     <div>
       <Testfunction/>

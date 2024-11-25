@@ -5,6 +5,7 @@ package product;
 service Product {
     rpc WarmUpCyclotron(Duration) returns(Reply){}
     rpc StartCyclotron(StartParamaters) returns (Reply){}
+    rpc StopCyclotron(Message) returns (Reply){}
 }
 
 //time in seconds?
@@ -21,5 +22,9 @@ message StartParamaters{
 }
 
 message Reply{
+    string text = 1;
+}
+
+message Message{
     string text = 1;
 }

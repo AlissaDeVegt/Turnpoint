@@ -1,10 +1,8 @@
 import {ThreeScene} from "../component/ThreeScene";
-import * as threeinfo from "../component/ThreeScene";
 import * as Server from "../grpc/server";
 import * as client from "../grpc/testclient";
 import * as calcul from "../Math/Calculation"
-
-
+import { useState, useEffect } from 'react'
 
 var prop={
   accel:0,
@@ -44,7 +42,6 @@ export async function Servload(){
   prop.load=particle.load;
   prop.radius=Cyclotron.deesradius;
   prop.collisionpoint= Cyclotron.deesradius+2;
-  //testRadialen();
 
   if(text== true){
     return (   
@@ -60,15 +57,4 @@ export async function Servload(){
       </div>
       );
   }
-}
-
-function testRadialen(){
-
-
-  console.log('sin with radials of 888 : ' + calcul.sin(888,1));
-  console.log('expected result : 0.877546429');
-
-  console.log('cos with radials of 888 : ' + calcul.cos(888,1));
-  console.log('expected result :-0.479491672');
-
 }
