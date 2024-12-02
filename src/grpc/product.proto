@@ -15,8 +15,8 @@ message Duration{
 }
 
 message StartParamaters{
-    int32 beamDurationstart = 1;
-    int32 beamDurationend = 2;
+    float cyclotronDiameter = 1;
+    float inBetween = 2;
     int32 beamcurrentstart = 3;
     int32 beamcurrentend = 4;
 }

@@ -13,6 +13,13 @@ todo
 2[X] fix weirdness with rendertime
 3[x] buttons for starting
 4[X] sliders fix
-5[] receive data
-6[] make it student friendly
+5[kinda] receive data
+6[x] make it student friendly
 7[] make it program friendly 
+8[] rename vaiables
+9[] take it particle radius in account
+10[] take the acrual bounds of the cyclotron in account
+11[] when particle leaves it leaves with a cretain kinetic energie which can be used to determine final speed?
+12[] fix speedup combo with magneticflux combo 
+13[] fix variable names
+14[] make a server only threejs objects

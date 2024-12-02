@@ -1,19 +1,18 @@
-var fs = require('fs');
-//import { Router, useRouter } from "next/router";
-import {Servload} from "../component/ServLoad";
-import {Testfunction} from "../component/ReloadComp";
-import * as Server from "../grpc/server";
+
+import {NavButtons} from "../component/NavButtons";
+
 import "../css/style.css"
 
-Server.StartServer();
 
-// kan elke naam hebben, hoeft geen Home te zijn! zolang je default maar benoemt
+
+/////-------------HOME PAGE-------------\\\\\
+
+///add explenation text
+
 export default function Home(){
-  //two buttons
   return(
     <div>
-      <Testfunction/>
-      <Servload/>
+      <NavButtons/>
     </div>
   )
 }

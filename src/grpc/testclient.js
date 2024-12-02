@@ -43,8 +43,8 @@ function runStart(callback){
     }
 
     var StartParamaters = {
-        beamDurationstart : 1,
-        beamDurationend : 100,
+        cyclotronDiameter : 1,
+        inBetween : 0.5,
         beamcurrentstart : 5,
         beamcurrentend : 300
     }

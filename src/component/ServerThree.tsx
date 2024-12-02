@@ -1,7 +1,8 @@
-'use client';
+'using client';
+
 import * as THREE from 'three';
-import * as calcul from "../Math/Calculation"
-import {CSS2DObject, CSS2DRenderer} from 'three/examples/jsm/renderers/CSS2DRenderer'
+import * as calcul from "../Math/Calculation";
+import {CSS2DObject, CSS2DRenderer} from 'three/examples/jsm/renderers/CSS2DRenderer';
 
 let scene,renderer,camera,render2d; //render components
 let particle, sphereleft,sphereright,collisionobject; //3d objects
