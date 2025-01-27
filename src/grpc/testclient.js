@@ -15,6 +15,7 @@ const protoDescriptor = grpc.loadPackageDefinition(packageDef);
 const productpackage = protoDescriptor.product;
 var client =new productpackage.Product('localhost:9090',grpc.credentials.createInsecure());
 
+
 function runwarmup(callback){
     function warmupcallback(error, reply){
         if(error){
@@ -71,10 +72,25 @@ function runStop(callback){
 }
 
 export function main(){
-    async.series([runwarmup]);
-    async.series([runStart]);
+    var warmup =false,start=false;
+    var time = 0;
+    setInterval(() => {
+        if(warmup ==false&&start==false&&time==0){
+            async.series([runwarmup]);
+            warmup =true
+        }
+        else if(warmup ==true&&start==false&&time<=1){
+            async.series([runStart]);           
+            start =true
+        }
+        else if(warmup ==true&&start==true&&time>=10){
+            async.series([runStop]);
+            warmup =false,start=false;
+            time = -4;
+        }
+        time= time +1;
 
-    //async.series([runStop]);
+    }, 1000)
 }
 
 exports.runwarmup =runwarmup;

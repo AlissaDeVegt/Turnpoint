@@ -1,96 +1,43 @@
-'using client';
-
+'use client';
 import * as THREE from 'three';
 import * as calcul from "../Math/Calculation";
-import {CSS2DObject, CSS2DRenderer} from 'three/examples/jsm/renderers/CSS2DRenderer';
 
 let scene,renderer,camera,render2d; //render components
-let particle, sphereleft,sphereright,collisionobject; //3d objects
-let p, pspeed,speedslider,testspeed, startbutton,pauzebutton,refreshbutton; // ui that stays
-let electricfield, electricfieldT, magneticflux,magneticfluxT, load, loadT, mass, massT;//ui sliders that hides when its running and the text of the sliders
-let timepassed =0,speed=0,speedup=0,speedupB=0,angle=0,rendertime=0,radius=0,distance=0,orbitspeed=0,backupx=0,backupy=0; //variables
-let running =false; 
-let leftside = false;
-let leftsideB = false;
+let particle, sphereleft,sphereright, arrowbody, arrowhead, leftcableD, leftcableBat, rightcableD, rightcableBat, batteryshort, batterylong; //3d objects
+let redMat, blueMat; //materials
+let cameradepth =-10, batteryspace=3; //some changable start variables
 
-var obj={
-    x:0.00,
-    y:0.00,
-    z:0.00
-}
 
+//actual component send to the page
 export const ThreeScene =({properties}:any)=>{
 
     if(typeof window !=='undefined'){
         init();
-
         createObjects(properties);
-        createUI();
         
         const handleResize = () => {
             const width = window.innerWidth;
             const height = window.innerHeight;
-        
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
-        
             renderer.setSize(width, height);
         };
-        
-        speedup=properties.speedup;
-        leftside = properties.left;
 
-        speedupB=properties.speedup;
-        leftsideB = properties.left;
         window.addEventListener('resize', handleResize);
 
         const renderScene=()=> {
-            pspeed.textContent = 'speed set to : ' + speedslider.slider.value;
-            speedup = speedslider.slider.value; 
-            electricfieldT.textContent = "electricfield set to : " + electricfield.slider.value;
-            magneticfluxT.textContent = "magneticflux set to : " + magneticflux.slider.value;
-
-            properties.electricfield = electricfield.slider.value;
-            properties.magneticflux = magneticflux.slider.value;
-
-            properties.accel = calcul.Accelaration(properties.load,properties.electricfield*0.01,properties.mass);
-
-            if(running ==true){
-                //hide certain aspect
-                hide();
-                p.textContent = 'current speed : ' + speed + " m/s";
-
-                if (radius>(properties.radius)){
-                    moveBehindDees(properties);
-                }
-                else if(obj.x <(0.5*properties.spacebetween) && obj.x >(-0.5*properties.spacebetween)){ 
-                    moveBetweenDees(properties)
-                }
-                else{
-                    moveInDees(properties);
-                    
-                }
+            if(properties.objx <(0.5*properties.spacebetween) && properties.objx >(-0.5*properties.spacebetween)){ 
+                change(properties);
             }
-            else{
-                //show aspects
-                show();
-            }
-            particle.position.x =(obj.x);
-            particle.position.z =(obj.y);
-            
+
+            particle.position.x =(properties.objx);
+            particle.position.z =(properties.objy);
             render2d.render(scene,camera);
-            renderer.render(scene, camera);
-            
-            requestAnimationFrame(renderScene);
-            
+            renderer.render(scene, camera);  
         };
 
-        let starttime = performance.now();
         renderScene();
-        let endtime = performance.now();
-        rendertime = ((endtime-starttime)); //makes it go from miliseconds to seconds time the speedup doesn't update
 
-        
         return () => {
             window.removeEventListener('resize', handleResize);
             };
@@ -100,6 +47,7 @@ export const ThreeScene =({properties}:any)=>{
     return renderer;
 };
 
+//initialises three and the renderers
 function init(){
     scene=new THREE.Scene();
 
@@ -109,213 +57,176 @@ function init(){
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth,window.innerHeight);
     renderer.domElement.style.position = 'absolute';
-
-    render2d = new CSS2DRenderer(); 
-    render2d.setSize(window.innerWidth,window.innerHeight);
-    render2d.domElement.style.position = 'absolute';
     
-    document.body.appendChild(render2d.domElement);
     document.body.appendChild(renderer.domElement);
 };
 
+//creates all 3d components
 function createObjects(properties:any){
 
+    //#region geometry
+    //-------------------------------------sphere--------------------------------------------
     const particlegeometry = new THREE.SphereGeometry(0.05);
-    const deeleftgeometry = new THREE.CircleGeometry(properties.radius,32,0,Math.PI);
-    const deerightgeometry = new THREE.CircleGeometry(properties.radius,32,Math.PI,Math.PI);
-    const material = new THREE.MeshBasicMaterial({color : 0x00ff00});
-    const endpointmat = new THREE.MeshBasicMaterial({color : 0xBA0109});
-    endpointmat.side = THREE.DoubleSide;
-    particle = new THREE.Mesh(particlegeometry, material);
-    scene.add (particle);
-    sphereleft = new THREE.Mesh(deeleftgeometry, endpointmat);
+
+    //-------------------------------------circle--------------------------------------------
+    const deeleftgeometry = new THREE.CircleGeometry(properties.radiusCycl,32,0,Math.PI);
+    const deerightgeometry = new THREE.CircleGeometry(properties.radiusCycl,32,Math.PI,Math.PI);
+
+    //-------------------------------------cylinder-----------------------------------------
+    const cableDmesh  = new THREE.CylinderGeometry( 0.02, 0.02, batteryspace, 32 ); 
+    const cableBatmesh  = new THREE.CylinderGeometry( 0.02, 0.02, properties.spacebetween, 32 ); 
+    const beammesh  = new THREE.CylinderGeometry( 0.01, 0.01, 0.8 * properties.spacebetween, 32 ); 
+    const batterylongmesh  = new THREE.CylinderGeometry( 0.02, 0.02, 1, 32 ); 
+    const batteryshortmesh  = new THREE.CylinderGeometry( 0.03, 0.03, 0.4, 32 ); 
+
+    //-------------------------------------cone-------------------------------------------
+    const headmesh = new THREE.ConeGeometry(0.2, 0.2, 32);
+    //#endregion 
+
+    //#region Materials
+    const particleMat = new THREE.MeshBasicMaterial({color : 0x00ff00});
+
+    redMat = new THREE.MeshBasicMaterial({color : 0xBA0109}); //+
+    blueMat = new THREE.MeshBasicMaterial({color : 0X0000ff}); //-
+    redMat.side = THREE.DoubleSide;
+    blueMat.side = THREE.DoubleSide;
+    //#endregion
+
+    //#region Meshes
+    particle = new THREE.Mesh(particlegeometry, particleMat);
+    sphereleft = new THREE.Mesh(deeleftgeometry, blueMat);
+    sphereright = new THREE.Mesh(deerightgeometry, redMat);
+
+    arrowbody = new THREE.Mesh(beammesh, redMat);
+    arrowhead = new THREE.Mesh(headmesh, redMat);
+
+    batterylong=new THREE.Mesh(batterylongmesh, redMat); //+
+    batteryshort=new THREE.Mesh(batteryshortmesh, blueMat); //-
+
+    leftcableD=new THREE.Mesh(cableDmesh, redMat); //cable into dee
+    leftcableBat=new THREE.Mesh(cableBatmesh, redMat); //cable into bat
+
+    rightcableD=new THREE.Mesh(cableDmesh, blueMat); //cable into dee
+    rightcableBat=new THREE.Mesh(cableBatmesh, blueMat); //cable into bat
+    //#endregion
+
+    //#region Add to scene
+    scene.add(particle);
     scene.add(sphereleft);
-    sphereright = new THREE.Mesh(deerightgeometry, endpointmat);
     scene.add(sphereright);
-    const collisiongeometry = new THREE.SphereGeometry(0.05);
+    scene.add(arrowbody);
+    scene.add(arrowhead);
+    scene.add(batterylong);
+    scene.add(batteryshort);
+    scene.add(leftcableBat);
+    scene.add(leftcableD);
+    scene.add(rightcableBat);
+    scene.add(rightcableD);
+    //#endregion
 
-    //const collisionmaterial = new THREE.MeshBasicMaterial({color : 0x00ff00});
-    //collisionobject = new THREE.Mesh(collisiongeometry, collisionmaterial);
-    //scene.add(sphereright);
+    //#region Ypos
+    particle.position.y = cameradepth;
+    
+    sphereleft.position.y = cameradepth;
+    sphereright.position.y = cameradepth;
 
-    particle.position.y = -10;
-    sphereleft.rotation.x = calcul.DegreesToRad(90);
+    arrowbody.position.y = cameradepth;
+    arrowhead.position.y = 2*cameradepth;
+    
+    batteryshort.position.y = cameradepth;
+    batterylong.position.y = cameradepth;
+
+    leftcableD.position.y=cameradepth;
+    leftcableBat.position.y=cameradepth;
+
+    rightcableD.position.y=cameradepth;
+    rightcableBat.position.y=cameradepth;
+    //#endregion
+
+    //#region Rotation
     sphereright.rotation.x = calcul.DegreesToRad(90);
-    sphereleft.rotation.z = calcul.DegreesToRad(90);
     sphereright.rotation.z = calcul.DegreesToRad(90);
-    sphereleft.position.y = -10;
-    sphereright.position.y = -10;
-    sphereleft.position.x = -0.5*properties.spacebetween;
-    sphereright.position.x = 0.5*properties.spacebetween;
+    
+    sphereleft.rotation.x = calcul.DegreesToRad(90);
+    sphereleft.rotation.z = calcul.DegreesToRad(90);
+
+    arrowbody.rotation.x = calcul.DegreesToRad(90);
+    arrowbody.rotation.z = calcul.DegreesToRad(90);
+
+    arrowhead.rotation.x = calcul.DegreesToRad(90);
+    arrowhead.rotation.z = calcul.DegreesToRad(90);
+    arrowhead.rotation.y = calcul.DegreesToRad(180);
+
+    leftcableD.rotation.z = calcul.DegreesToRad(90);
+    leftcableD.rotation.y = calcul.DegreesToRad(90);
+
+    leftcableBat.rotation.z = calcul.DegreesToRad(90);
+
+    rightcableD.rotation.z = calcul.DegreesToRad(90);
+    rightcableD.rotation.y = calcul.DegreesToRad(90);
+
+    rightcableBat.rotation.z = calcul.DegreesToRad(90);
+
+    //#endregion
+
+    //#region positions
+    sphereleft.position.x = -0.4*properties.spacebetween;
+    sphereright.position.x = 0.4*properties.spacebetween;
+
+    arrowhead.position.x = 0.5*properties.spacebetween;
+
+    batterylong.position.z = batteryspace;
+    batterylong.position.x = 0.05;
+    batteryshort.position.z = batteryspace;
+    batteryshort.position.x = -0.05;
+
+    leftcableD.position.x=0.05 + properties.spacebetween;
+    leftcableD.position.z = 0.5 * batteryspace;
+    leftcableBat.position.z = batteryspace;
+    leftcableBat.position.x = 0.05 + 0.5*properties.spacebetween;
+
+    rightcableD.position.x=-0.05 - properties.spacebetween;
+    rightcableD.position.z = 0.5 * batteryspace;
+    rightcableBat.position.z = batteryspace;
+    rightcableBat.position.x = -0.05 - 0.5*properties.spacebetween;
+    //#endregion
     
 }
 
-function createUI(){
+//Showcases the direction and change in flow of electric power
+function change (properties:any) {
+    if (properties.left ==false){
 
-    startbutton = buttonElement('start','buttons',-8,-10,-4.25);
-    startbutton.addEventListener("click", startCyclotron);
+        sphereright.material = blueMat;
+        sphereleft.material = redMat;
 
-    pauzebutton = buttonElement('pauze','buttons',-7.5,-10,-4.25);
-    pauzebutton.addEventListener("click", stopCyclotron);
+        arrowhead.rotation.y = calcul.DegreesToRad(180);
+        arrowhead.position.x = 0.4*properties.spacebetween;
 
-    refreshbutton = buttonElement('reset','buttons',-8.5,-10,-4.25);
-    refreshbutton.addEventListener("click", resetcyclotron) ;
+        leftcableBat.material=blueMat;
+        leftcableD.material=blueMat;
 
+        rightcableBat.material=redMat;
+        rightcableD.material=redMat;
 
-    p = textElement('UIText',-8,-10,-4)
-
-    speedslider = sliderElement('speedslider','1','20','1',-8,-10,-3.5);
-    pspeed = textElement('UIText',-6.5,-10,-3.7);
-    electricfield = sliderElement('speedslider','1','20','1',-8,-10,-3.3);
-    electricfieldT = textElement('UIText',-6.4,-10,-3.5);
-    magneticflux = sliderElement('speedslider','1','20','1',-8,-10,-3.1);
-    magneticfluxT = textElement('UIText',-6.4,-10,-3.3);
-}
-
-function moveInDees(properties:any){
-    radius = calcul.radius(speed,properties.mass,properties.load,properties.magneticflux);
-    orbitspeed = calcul.angle(speed,radius);
-    var rad = (rendertime*0.001*speedup)* orbitspeed;
-    angle += rad;
-
-    if (obj.x>=(0.5*properties.spacebetween)){
-
-        if(angle>calcul.DegreesToRad(90) && leftside == false){
-            leftside =true;
-        }
-
-        obj.x = backupx + calcul.cos(calcul.DegreesToRad(270)+(angle),radius); 
-        obj.y = (backupy + calcul.sin(calcul.DegreesToRad(270),radius)) - calcul.sin(calcul.DegreesToRad(270)+(angle),radius); 
+        batterylong.position.x =-0.05;
+        batteryshort.position.x =0.05;
 
     }
-    else if (obj.x<=(-0.5*properties.spacebetween) ){
-        if(angle>calcul.DegreesToRad(90) && leftside == true){
-            leftside =false;
-        }
+    else{
+        sphereright.material = redMat;
+        sphereleft.material = blueMat;
 
-        obj.x = backupx + calcul.cos(calcul.DegreesToRad(90)+(angle),radius); 
-        obj.y = (backupy + calcul.sin(calcul.DegreesToRad(90),radius)) - calcul.sin(calcul.DegreesToRad(90)+(angle),radius); 
+        arrowhead.rotation.y = 0;
+        arrowhead.position.x = -0.4*properties.spacebetween;
+
+        leftcableBat.material=redMat;
+        leftcableD.material=redMat;
+
+        rightcableBat.material=blueMat;
+        rightcableD.material=blueMat;
+
+        batterylong.position.x =0.05;
+        batteryshort.position.x =-0.05;
     }
-}
-
-function moveBetweenDees(properties:any){
-    speed = calcul.SpeedEndAccel(properties.accel,speed,0, (rendertime*0.001*speedup));
-    distance = calcul.DistAccel(speed,properties.accel,(rendertime*0.001*speedup));
-    if(leftside==true){
-        obj.x -= distance; 
-    }
-    else if(leftside==false){
-        obj.x += distance; 
-    }
-
-    if (obj.x>=0.5*properties.spacebetween){
-        obj.x = 0.5*properties.spacebetween;
-    }                    
-    else if (obj.x<=-0.5*properties.spacebetween){
-        obj.x = -0.5*properties.spacebetween;
-    }
-
-    angle = 0;
-    backupx = obj.x;
-    backupy = obj.y;
-    timepassed = timepassed+(rendertime*0.001*speedup);
-}
-
-function moveBehindDees(properties:any){                
-    var bspeed = calcul.SpeedEndAccel(properties.accel,speed,0, (rendertime*0.001*speedup));
-    if(leftside==false){
-        obj.x +=bspeed * (rendertime*0.001*speedup); 
-    }
-    else if(leftside==true){
-        obj.x -=bspeed * (rendertime*0.001*speedup); 
-    }
-    angle = 0;
-}
-
-export const textElement=(classname:any, x:any,y:any,z:any)=>{
-    const element = document.createElement('p');
-    element.className =classname;
-    const cssLabel = new CSS2DObject(element);
-    scene.add(cssLabel);
-    cssLabel.position.set(x,y,z);
-    return element;
-}
-
-export const sliderElement=(id:any,min:any,max:any,value:any,x:any,y:any,z:any)=>{
-    var sliderinfo={
-        slider:document.createElement('input'),
-        slidercontainer:document.createElement('div'),
-    
-    }
-    const slider = document.createElement('input');
-    slider.id = id;
-    slider.className ='slider';
-    slider.type ='range';
-    slider.min =min;
-    slider.max =max;
-    slider.value =value;
-    sliderinfo.slider=slider;
-
-    const slidercontainer = document.createElement('div');
-    slidercontainer.className = 'sliderContainer';
-    slidercontainer.appendChild(slider);
-    sliderinfo.slidercontainer=slidercontainer;
-
-    const sliderPointlabel = new CSS2DObject(sliderinfo.slidercontainer);
-    scene.add(sliderPointlabel);
-    sliderPointlabel.position.set(x,y,z)
-
-    return sliderinfo;
-}
-
-export const buttonElement=(value:any,classname:any, x:any,y:any,z:any)=>{
-    const button = document.createElement('button');
-    button.type ='button';
-    button.className = classname;
-    button.textContent=value;
-    const cssButton = new CSS2DObject(button);
-    scene.add(cssButton);
-    cssButton.position.set(x,y,z);
-    return button;
-}
-
-export function startCyclotron(){
-    running = true;
-}
-
-export function stopCyclotron(){
-    running = false;
-}
-
-export function resetcyclotron(){
-    timepassed =0;
-    speed=0;
-    angle=0;
-    radius=0;
-    distance=0;
-    orbitspeed=0;
-    backupx=0;
-    backupy=0;    
-    running =false;
-    speedup=speedupB;
-    leftside=leftsideB;
-
-    obj.x=0.00;
-    obj.y=0.00;
-    obj.z=0.00;
-    
-}
-
-function hide(){
-    electricfield.slider.style.display = 'none';
-    electricfieldT.style.display =  'none';
-    magneticflux.slider.style.display = 'none';
-    magneticfluxT.style.display = 'none';
-}
-
-function show(){
-    electricfield.slider.style.display = 'block';
-    electricfieldT.style.display = 'block';
-    magneticflux.slider.style.display = 'block';
-    magneticfluxT.style.display = 'block';
 }
