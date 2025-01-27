@@ -26,13 +26,43 @@ export const ThreeScene =({properties}:any)=>{
         window.addEventListener('resize', handleResize);
 
         const renderScene=()=> {
-            if(properties.objx <(0.5*properties.spacebetween) && properties.objx >(-0.5*properties.spacebetween)){ 
-                change(properties);
+            if (properties.redleft ==true&&properties.redright ==false){
+
+                sphereright.material = blueMat;
+                sphereleft.material = redMat;
+        
+                arrowhead.rotation.y = calcul.DegreesToRad(180);
+                arrowhead.position.x = 0.4*properties.spacebetween;
+        
+                leftcableBat.material=blueMat;
+                leftcableD.material=blueMat;
+        
+                rightcableBat.material=redMat;
+                rightcableD.material=redMat;
+        
+                batterylong.position.x =-0.05;
+                batteryshort.position.x =0.05;
+        
+            }
+            else if (properties.redleft ==false &&properties.redright ==true){
+                sphereright.material = redMat;
+                sphereleft.material = blueMat;
+        
+                arrowhead.rotation.y =  calcul.DegreesToRad(0);
+                arrowhead.position.x = -0.4*properties.spacebetween;
+        
+                leftcableBat.material=redMat;
+                leftcableD.material=redMat;
+        
+                rightcableBat.material=blueMat;
+                rightcableD.material=blueMat;
+        
+                batterylong.position.x =0.05;
+                batteryshort.position.x =-0.05;
             }
 
             particle.position.x =(properties.objx);
             particle.position.z =(properties.objy);
-            render2d.render(scene,camera);
             renderer.render(scene, camera);  
         };
 
@@ -97,8 +127,8 @@ function createObjects(properties:any){
     sphereleft = new THREE.Mesh(deeleftgeometry, blueMat);
     sphereright = new THREE.Mesh(deerightgeometry, redMat);
 
-    arrowbody = new THREE.Mesh(beammesh, redMat);
-    arrowhead = new THREE.Mesh(headmesh, redMat);
+    arrowbody = new THREE.Mesh(beammesh, blueMat);
+    arrowhead = new THREE.Mesh(headmesh, blueMat);
 
     batterylong=new THREE.Mesh(batterylongmesh, redMat); //+
     batteryshort=new THREE.Mesh(batteryshortmesh, blueMat); //-
@@ -191,42 +221,4 @@ function createObjects(properties:any){
     rightcableBat.position.x = -0.05 - 0.5*properties.spacebetween;
     //#endregion
     
-}
-
-//Showcases the direction and change in flow of electric power
-function change (properties:any) {
-    if (properties.left ==false){
-
-        sphereright.material = blueMat;
-        sphereleft.material = redMat;
-
-        arrowhead.rotation.y = calcul.DegreesToRad(180);
-        arrowhead.position.x = 0.4*properties.spacebetween;
-
-        leftcableBat.material=blueMat;
-        leftcableD.material=blueMat;
-
-        rightcableBat.material=redMat;
-        rightcableD.material=redMat;
-
-        batterylong.position.x =-0.05;
-        batteryshort.position.x =0.05;
-
-    }
-    else{
-        sphereright.material = redMat;
-        sphereleft.material = blueMat;
-
-        arrowhead.rotation.y = 0;
-        arrowhead.position.x = -0.4*properties.spacebetween;
-
-        leftcableBat.material=redMat;
-        leftcableD.material=redMat;
-
-        rightcableBat.material=blueMat;
-        rightcableD.material=blueMat;
-
-        batterylong.position.x =0.05;
-        batteryshort.position.x =-0.05;
-    }
 }

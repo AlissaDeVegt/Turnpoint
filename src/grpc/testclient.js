@@ -83,7 +83,7 @@ export function main(){
             async.series([runStart]);           
             start =true
         }
-        else if(warmup ==true&&start==true&&time>=10){
+        else if(warmup ==true&&start==true&&time>=30){
             async.series([runStop]);
             warmup =false,start=false;
             time = -4;

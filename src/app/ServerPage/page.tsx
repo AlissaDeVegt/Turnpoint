@@ -13,7 +13,9 @@ var prop={
   objx:0,
   objy:0,
   collisionpoint: 0,
-  left: false
+  left: false,
+  redleft:false,
+  redright:false
 }
 
 //serverpage
@@ -24,6 +26,9 @@ export default async function ServerPage(){
   prop.objx=ServerData.getObjX();
   prop.objy=ServerData.getObjY();
   prop.left=ServerData.getLeft();
+  prop.redleft=ServerData.getRedLeft();
+  prop.redright=ServerData.getRedRight();
+
     return(
       <div>
         <div>

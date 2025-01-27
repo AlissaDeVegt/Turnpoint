@@ -168,8 +168,8 @@ function createObjects(){
     sphereleft = new THREE.Mesh(deeleftgeometry, blueMat);
     sphereright = new THREE.Mesh(deerightgeometry, redMat);
 
-    arrowbody = new THREE.Mesh(beammesh, redMat);
-    arrowhead = new THREE.Mesh(headmesh, redMat);
+    arrowbody = new THREE.Mesh(beammesh, blueMat);
+    arrowhead = new THREE.Mesh(headmesh, blueMat);
 
     batterylong=new THREE.Mesh(batterylongmesh, redMat); //+
     batteryshort=new THREE.Mesh(batteryshortmesh, blueMat); //-
